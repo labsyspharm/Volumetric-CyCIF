@@ -12,7 +12,7 @@ Alex Y. H. Wong<sup>1,2*</sup>, Yi Daniel Lu<sup>1,2*</sup>, Ziyuan Zhao<sup>1,2
 <sup>6</sup> Department of Pathology, Brigham and Women's Hospital, Boston, MA, USA  
 <sup>7</sup> Department of Systems Biology, Harvard Medical School, 200 Longwood Avenue, Boston, MA, USA
 
-*Authors contributed equally*  
+**Authors contributed equally*  
 † Corresponding author: [peter_sorger@hms.harvard.edu](mailto:peter_sorger@hms.harvard.edu)
 
 </div>
