@@ -1,8 +1,29 @@
-<div align="center">
-
 # Cyclic Light-sheet Microscopy for 3D Spatial Profiling of Immunological Structures in Human Specimens
 
-Alex Y. H. Wong<sup>1,2*</sup>, Yi Daniel Lu<sup>1,2*</sup>, Ziyuan Zhao<sup>1,2</sup>, Felix Zhou<sup>3</sup>, Hojeong Park<sup>4</sup>, Zoltan Maliga<sup>1,2</sup>, Yvonne N. A. Anang<sup>5,6</sup>, Shannon Coy<sup>1,3</sup>, Gaudenz Danuser<sup>4</sup>, Sandro Santagata<sup>1,2,6,7</sup>, Clarence Yapp<sup>1,2†</sup> & Peter K. Sorger<sup>1,2,7†</sup>
+## TABLE OF CONTENTS
+
+- [GENERAL INFORMATION](#general-information)
+- [ASSOCIATED PUBLICATION](#associated-publication)
+- [RECOMMENDED CITATION](#recommended-citation)
+- [USEFUL LINKS](#useful-links)
+- [SUPERSPLAT (PREVIEW DATA ON BROWSER)](#supersplat-preview-data-on-browser)
+- [ACCESS THE DATASET](#access-the-dataset)
+- [FILE ORGANIZATION](#file-organization)
+- [REPOSITORY LINKS](#repository-links)
+- [FILE LIST](#file-list)
+- [ADDITIONAL NOTES/COMMENTS](#additional-notescomments)
+
+## GENERAL INFORMATION
+
+### Title
+
+**Cyclic Light-sheet Microscopy for 3D Spatial Profiling of Immunological Structures in Human Specimens**
+
+### Authors
+
+Alex Y. H. Wong<sup>1,2*</sup>, Yi Daniel Lu<sup>1,2*</sup>, Ziyuan Zhao<sup>1,2</sup>, Felix Zhou<sup>3</sup>, Hojeong Park<sup>4</sup>, Zoltan Maliga<sup>1,2</sup>, Yvonne N. A. Anang<sup>5,6</sup>, Shannon Coy<sup>1,3</sup>, Gaudenz Danuser<sup>4</sup>, Sandro Santagata<sup>1,2,6,7</sup>, Clarence Yapp<sup>1,2†</sup> and Peter K. Sorger<sup>1,2,7†</sup>
+
+### Affiliations
 
 <sup>1</sup> Laboratory of Systems Pharmacology, Harvard Medical School, Boston, MA, USA  
 <sup>2</sup> Ludwig Centre at Harvard, Harvard Medical School, Boston, MA, USA  
@@ -12,7 +33,90 @@ Alex Y. H. Wong<sup>1,2*</sup>, Yi Daniel Lu<sup>1,2*</sup>, Ziyuan Zhao<sup>1,2
 <sup>6</sup> Department of Pathology, Brigham and Women's Hospital, Boston, MA, USA  
 <sup>7</sup> Department of Systems Biology, Harvard Medical School, 200 Longwood Avenue, Boston, MA, USA
 
-**Authors contributed equally*  
-† Corresponding author: [peter_sorger@hms.harvard.edu](mailto:peter_sorger@hms.harvard.edu)
+### Author Notes
 
-</div>
+`*` Authors contributed equally  
+`†` Corresponding authors: Clarence Yapp and Peter K. Sorger  
+Contact: [peter_sorger@hms.harvard.edu](mailto:peter_sorger@hms.harvard.edu)
+
+### Overview
+
+This repository accompanies a cyclic light-sheet microscopy study for 3D spatial profiling of immunological structures in human specimens. It is intended to organize analysis resources, dataset access details, and links associated with the manuscript.
+
+## ASSOCIATED PUBLICATION
+
+### Publication Details
+
+**Manuscript title:** *Cyclic Light-sheet Microscopy for 3D Spatial Profiling of Immunological Structures in Human Specimens*  
+**Publication status:** TBD  
+**Journal / preprint:** TBD  
+**DOI:** TBD
+
+## RECOMMENDED CITATION
+
+### Citation Text
+
+Please cite this dataset and repository as:
+
+Wong, A. Y. H. & Lu, Y. et al. (2026). *Cyclic Light-sheet Microscopy for 3D Spatial Profiling of Immunological Structures in Human Specimens*. `{journal / bioRxiv / DOI to be added}`.
+
+## USEFUL LINKS
+
+### External Links
+
+- Publication DOI: `TBD`
+- Archived record of this repository: `[ADD ZENODO DOI HERE]`
+- Online data exploration page: `TBD`
+- License / restrictions placed on the data: `TBD`
+
+## SUPERSPLAT (PREVIEW DATA ON BROWSER)
+
+### Browser Preview
+
+- 20X normal colon: [https://superspl.at/scene/a56ef855](https://superspl.at/scene/a56ef855)
+
+## ACCESS THE DATASET
+
+### Data Availability
+
+Dataset access details will be added here as data deposition is finalized. This section can be updated with direct links to image repositories, cloud buckets, portal records, and online viewers.
+
+### Access Notes
+
+Add access instructions here once the data hosting location and any access requirements are finalized.
+
+## FILE ORGANIZATION
+
+### Naming Conventions
+
+Each file is expected to correspond to a specimen, sample, or derived analysis output. Naming conventions and release locations can be updated here as the dataset is finalized.
+
+### File Types
+
+| File Type | Description | Location |
+| --- | --- | --- |
+| `SampleID.ome.tif` | Stitched cyclic light-sheet image pyramid in OME-TIFF format | `TBD` |
+| `SampleID-histology.ome.tif` | Histology image of matched or adjacent section, if available | `TBD` |
+| `SampleID-mask.ome.tif` | Segmentation mask image | `TBD` |
+| `SampleID-cells.csv` | Single-cell feature table including marker intensities and morphology | `TBD` |
+| `SampleID-metadata.csv` | Sample- or region-level metadata | `TBD` |
+| `SampleID-analysis.*` | Downstream analysis outputs and summaries | `TBD` |
+
+## REPOSITORY LINKS
+
+### Archive Links
+
+- Zenodo archive: `[ADD ZENODO DOI OR RECORD LINK HERE]`
+
+## FILE LIST
+
+### Current Repository Contents
+
+- `README.md`: Project landing page and dataset information template.
+
+## ADDITIONAL NOTES/COMMENTS
+
+### Pending Updates
+
+- Replace all `TBD` entries once the manuscript DOI, data portals, and archive records are available.
+- Expand the file table with finalized naming conventions and storage locations before public release.
