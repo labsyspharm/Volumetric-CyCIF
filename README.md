@@ -73,7 +73,7 @@ Wong, A. Y. H. & Lu, Y. et al. (2026). *Cyclic Light-sheet Microscopy for 3D Spa
 
 ### Browser Preview
 
-- 20X normal colon: [https://superspl.at/scene/a56ef855](https://superspl.at/scene/a56ef855)
+- 20X normal colon: [https://superspl.at/scene/b181b113](https://superspl.at/scene/b181b113)
 
 ## ACCESS THE DATASET
 
