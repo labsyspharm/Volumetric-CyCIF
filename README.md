@@ -69,11 +69,13 @@ Wong, A. Y. H. & Lu, Y. et al. (2026). *Cyclic Light-sheet Microscopy for 3D Spa
 - Online data exploration page: `TBD`
 - License / restrictions placed on the data: `TBD`
 
-## SUPERSPLAT (PREVIEW DATA ON BROWSER)
+## 3D Gaussian Splats (PREVIEW DATA IN BROWSER)
 
 ### Browser Preview
 
 - 20X normal colon: [https://superspl.at/scene/b181b113](https://superspl.at/scene/b181b113)
+- virtual H&E: [https://superspl.at/scene/44eaf25f](https://superspl.at/scene/44eaf25f)
+- mature and immature SILTs in normal colon: [https://superspl.at/scene/9a6e2550](https://superspl.at/scene/9a6e2550)
 
 ## ACCESS THE DATASET
 
