@@ -65,7 +65,7 @@ Wong, A. Y. H. & Lu, Y. et al. (2026). *Cyclic Light-sheet Microscopy for 3D Spa
 ### External Links
 
 - Publication DOI: `TBD`
-- Archived record of this repository: `[ADD ZENODO DOI HERE]`
+- Archived record of this repository: [https://doi.org/10.5281/zenodo.20170967](https://doi.org/10.5281/zenodo.20170967)
 - Online data exploration page: `TBD`
 - License / restrictions placed on the data: `TBD`
 
@@ -108,7 +108,7 @@ Each file is expected to correspond to a specimen, sample, or derived analysis o
 
 ### Archive Links
 
-- Zenodo archive: `[ADD ZENODO DOI OR RECORD LINK HERE]`
+- Zenodo archive: [https://doi.org/10.5281/zenodo.20170967](https://doi.org/10.5281/zenodo.20170967)
 
 ## FILE LIST
 
