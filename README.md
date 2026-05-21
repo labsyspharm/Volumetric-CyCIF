@@ -49,7 +49,7 @@ This repository accompanies a cyclic light-sheet microscopy study for 3D spatial
 
 **Manuscript title:** *Cyclic Light-sheet Microscopy for 3D Spatial Profiling of Immunological Structures in Human Specimens*  
 **Publication status:** TBD  
-**Journal:** 
+**Journal:** TBD  
 **Preprint:** [https://doi.org/10.64898/2026.05.17.725158](https://doi.org/10.64898/2026.05.17.725158)   
 **DOI:** TBD
 
