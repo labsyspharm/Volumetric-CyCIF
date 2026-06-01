@@ -22,9 +22,6 @@ WizardStyle=modern
 UninstallDisplayName={#MyAppName}
 UninstallDisplayIcon={app}\assets\cyants_icon.ico
 
-[Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: unchecked
-
 [Files]
 Source: "..\..\..\*"; DestDir: "{app}"; Excludes: ".git\*,build\*,dist\*,__pycache__\*,*.pyc,.DS_Store"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\..\..\dist\CyANTs.exe"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
@@ -38,7 +35,7 @@ Source: "..\assets\cyants_icon.ico"; DestDir: "{app}\assets"; Flags: ignoreversi
 Name: "{group}\CyANTs GUI"; Filename: "{app}\launch_cyants_gui.bat"; WorkingDir: "{app}"; IconFilename: "{app}\assets\cyants_icon.ico"
 Name: "{group}\Install or Repair CyANTs"; Filename: "{app}\install_or_repair_cyants.bat"; Parameters: """{app}"" cyants"; WorkingDir: "{app}"; IconFilename: "{app}\assets\cyants_icon.ico"
 Name: "{group}\Update CyANTs"; Filename: "{app}\update_cyants.bat"; WorkingDir: "{app}"; IconFilename: "{app}\assets\cyants_icon.ico"
-Name: "{autodesktop}\CyANTs GUI"; Filename: "{app}\launch_cyants_gui.bat"; WorkingDir: "{app}"; Tasks: desktopicon; IconFilename: "{app}\assets\cyants_icon.ico"
+Name: "{autodesktop}\CyANTs GUI"; Filename: "{app}\launch_cyants_gui.bat"; WorkingDir: "{app}"; IconFilename: "{app}\assets\cyants_icon.ico"
 
 [Run]
 Filename: "{app}\install_or_repair_cyants.bat"; Parameters: """{app}"" cyants --no-pause"; Description: "Create or update the CyANTs conda environment now"; Flags: postinstall shellexec waituntilterminated skipifsilent

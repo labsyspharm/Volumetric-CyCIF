@@ -150,7 +150,8 @@ Use the provided `CyANTs_Setup.exe` from the GitHub Actions artifact, release, o
 2. Double-click it. No administrator rights should be needed because it installs for the current user.
 3. Leave `Create or update the CyANTs conda environment now` checked on the final installer page.
 4. Leave `Launch CyANTs GUI` checked if you want the GUI to open automatically after the environment setup finishes.
-5. Use `Install or Repair CyANTs` from the Start Menu later if packages break or the environment needs to be recreated.
+5. Use the `CyANTs GUI` desktop icon or Start Menu shortcut to reopen the GUI later.
+6. Use `Install or Repair CyANTs` from the Start Menu later if packages break or the environment needs to be recreated.
 
 Uninstall safety: Windows uninstall removes the CyANTs application files and shortcuts only. It does not delete Miniforge, the `cyants` conda environment, project folders, registered TIFFs, `.ims` data, or files under your `Reg` output directories. Remove those manually only when you are sure they are no longer needed.
 

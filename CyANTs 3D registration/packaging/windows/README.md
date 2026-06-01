@@ -10,7 +10,7 @@ Use `CyANTs_Setup.exe` when available. It is the from-scratch Windows installer 
 2. Double-click it.
 3. Leave `Create or update the CyANTs conda environment now` checked on the final installer page.
 4. Leave `Launch CyANTs GUI` checked to open the GUI immediately after setup.
-5. Later, launch `CyANTs GUI` from the Start Menu.
+5. Later, launch `CyANTs GUI` from the desktop icon or Start Menu.
 
 If you only have `CyANTs.exe`, place it in a folder such as `C:\Users\Administrator1\Documents\cyants` and double-click it. The bare `.exe` is a portable GUI launcher, not the full dependency installer. For a new shared PC, distribute `CyANTs_Setup.exe`.
 
