@@ -1,0 +1,15 @@
+name: cyants
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - simpleitk
+  - h5py
+  - tifffile
+  - pillow
+  - pip:
+      - antspyx
+      - paramiko
+      - roifile

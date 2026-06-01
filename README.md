@@ -110,12 +110,14 @@ Each file is expected to correspond to a specimen, sample, or derived analysis o
 ### Archive Links
 
 - Zenodo archive: [https://doi.org/10.5281/zenodo.20170967](https://doi.org/10.5281/zenodo.20170967)
+- CyANTs 3D registration workflow: [CyANTs README](CyANTs%203D%20registration/README.md)
 
 ## FILE LIST
 
 ### Current Repository Contents
 
 - `README.md`: Project landing page and dataset information template.
+- `CyANTs 3D registration/`: ANTsPy-based 3D registration workflow for large multichannel CyCIF / light-sheet Imaris volumes.
 
 ## ADDITIONAL NOTES/COMMENTS
 
