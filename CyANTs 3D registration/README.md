@@ -118,7 +118,7 @@ The GUI has tabs for:
 - `Whole Volume`: choose fixed/moving `.ims` paths, tile count/overlap, global/tile downsampling, final TIFF output folder, source-map overrides, and map/QC options.
 - `Intracycle`: correct channels within one cycle before later ROI or whole-volume registration.
 
-The ROI tab includes `Preview ROI Fast`, which loads the coarsest available `.ims` pyramid level, for example `ResolutionLevel 4`, into a small scrollable Z viewer with an optional max-projection toggle. If an ROI CSV is already selected, the Fiji/ImageJ polygon is overlaid. If no CSV exists yet, the viewer starts with an editable ROI box. Drag outside the box to draw a new ROI, drag inside it to move it, or drag the corners to resize it. Click `Confirm ROI` to write a full-resolution `X,Y` coordinate CSV and populate the ROI CSV field. The conversion uses the original `.ims` full-resolution metadata shape, so coordinates drawn on the low-resolution preview are scaled back onto the original full-resolution image grid. If no lower pyramid level exists, the preview falls back to a 16x direct strided read. The Whole Volume tab includes `Preview Tiles`, which draws the full-Z XY tile grid from `.ims` metadata before any registration runs.
+The ROI tab includes `Preview ROI`, which loads the coarsest available `.ims` pyramid level, for example `ResolutionLevel 4`, into a small scrollable Z viewer with an optional max-projection toggle. If an ROI CSV is already selected, the Fiji/ImageJ polygon is overlaid. If no CSV exists yet, the viewer starts with an editable ROI box. Drag outside the box to draw a new ROI, drag inside it to move it, or drag the corners to resize it. Click `Confirm ROI` to write a full-resolution `X,Y` coordinate CSV and populate the ROI CSV field. The conversion uses the original `.ims` full-resolution metadata shape, so coordinates drawn on the low-resolution preview are scaled back onto the original full-resolution image grid. If no lower pyramid level exists, the preview falls back to a 16x direct strided read. The Whole Volume tab includes `Preview Tiles`, which draws the full-Z XY tile grid from `.ims` metadata before any registration runs.
 
 Use the `Command format` menu above the generated command to choose:
 
@@ -209,7 +209,7 @@ export CYANTS_DISABLE_IMS_PYRAMID=1
 Do not assume every cycle has four channels. For both ROI and whole-volume registered TIFF output:
 
 - `--ch` lists the source channels that actually exist and should be exported.
-- `--co` is the first Imaris output channel number for that cycle.
+- `--co` is the first Imaris output channel number for that cycle (channel order).
 - Selected source channels are packed consecutively from `--co`, regardless of their original channel numbers.
 - The next cycle's `--co` equals the previous cycle's `--co` plus the number of channels actually exported.
 
