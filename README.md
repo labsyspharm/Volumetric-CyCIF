@@ -6,7 +6,7 @@
 - [ASSOCIATED PUBLICATION](#associated-publication)
 - [RECOMMENDED CITATION](#recommended-citation)
 - [USEFUL LINKS](#useful-links)
-- [SUPERSPLAT (PREVIEW DATA ON BROWSER)](#supersplat-preview-data-on-browser)
+- [SUPERSPLAT (PREVIEW DATA ON BROWSER)](#3d-gaussian-splats-preview-data-in-browser)
 - [ACCESS THE DATASET](#access-the-dataset)
 - [FILE ORGANIZATION](#file-organization)
 - [REPOSITORY LINKS](#repository-links)
