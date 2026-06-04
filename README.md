@@ -17,7 +17,7 @@
 
 ### Title
 
-**Cyclic Light-sheet Microscopy for 3D Spatial Profiling of Immunological Structures in Human Specimens**
+**Volumetric Cyclic Immunofluorescence for 3D Spatial Profiling of Immune Structures in Human FFPE Tissue**
 
 ### Authors
 
