@@ -85,85 +85,7 @@ Minimum inputs you provide in commands:
 | `vcycif_ROI.py` | Optional cached-reference ROI registration directly from moving `.ims` data |
 | `ants_ims_intracycle_whole.py` | Correct whole-volume channel shift relative to DAPI within one cycle |
 | `ants_ims_tiled_quicksyn.py` | Full-volume cycle-to-reference registration with streamed tiled output |
-| `cyants_gui.py` | Optional desktop launcher that builds and runs the same headless commands |
 | `pad_tiff_stack.py` | Normalize TIFF dimensions when required |
-
-## Optional GUI Launcher
-
-The command-line scripts remain the source of truth and are the recommended way to run on an HPC or any headless session. The GUI is only a convenience launcher for local Windows/macOS/Linux desktops: it collects paths and options, shows the exact generated command, then runs the same Python scripts underneath.
-
-Start it from an activated CyANTs environment:
-
-```bat
-cd /d C:\Users\Administrator1\Documents\cyants && conda activate cyants && python "cyants_gui.py"
-```
-
-On macOS or Linux:
-
-```bash
-cd ~/Documents/cyants
-conda activate cyants
-python cyants_gui.py
-```
-
-If you are still using the older local checkout/environment names, replace the folder and environment:
-
-```bat
-cd /d C:\Users\Administrator1\Documents\CyCIF_fireants && conda activate CyCIF_ANTs && python "cyants_gui.py"
-```
-
-The GUI has tabs for:
-
-- `ROI Registration`: choose the project folder, cycle id, moving `.ims`, ROI coordinate CSV, fixed reference crop, channels, downsample factor, and QC options.
-- `Whole Volume`: choose fixed/moving `.ims` paths, tile count/overlap, global/tile downsampling, final TIFF output folder, source-map overrides, and map/QC options.
-- `Intracycle`: correct channels within one cycle before later ROI or whole-volume registration.
-
-The ROI tab includes `Preview ROI`, which loads the coarsest available `.ims` pyramid level, for example `ResolutionLevel 4`, into a small scrollable Z viewer with an optional max-projection toggle. If an ROI CSV is already selected, the Fiji/ImageJ polygon is overlaid. If no CSV exists yet, the viewer starts with an editable ROI box. Drag outside the box to draw a new ROI, drag inside it to move it, or drag the corners to resize it. Click `Confirm ROI` to write a full-resolution `X,Y` coordinate CSV and populate the ROI CSV field. The conversion uses the original `.ims` full-resolution metadata shape, so coordinates drawn on the low-resolution preview are scaled back onto the original full-resolution image grid. If no lower pyramid level exists, the preview falls back to a 16x direct strided read. The Whole Volume tab includes `Preview Tiles`, which draws the full-Z XY tile grid from `.ims` metadata before any registration runs.
-
-Use the `Command format` menu above the generated command to choose:
-
-- `Windows CMD`: copy/paste into Anaconda Prompt or a `.bat` file.
-- `macOS/Linux/HPC`: copy/paste into a shell prompt or scheduler script.
-- `Exact local run`: show the exact interpreter and absolute script path used by the GUI's `Run` button.
-
-Use `Copy Command` or `Save Command` before running when you want a reproducible command for the HPC. Use `Save Config` to store all GUI fields as JSON beside a run. The GUI uses standard Tkinter and works with Browse buttons by default. If `import tkinter` fails in a minimal conda environment, install Tk support first:
-
-```bash
-conda install tk
-```
-
-Optional drag/drop is enabled automatically if you install:
-
-```bat
-python -m pip install tkinterdnd2
-```
-
-Headless mode is unchanged: every command shown in this README can still be run directly without the GUI.
-
-### Recommended Windows Installer
-
-For shared PCs, the recommended packaging is `CyANTs_Setup.exe`. It is the single executable intended for users starting from a blank Windows account: no existing Python, conda, or admin rights are required. It installs CyANTs per user under `%LOCALAPPDATA%\Programs\CyANTs`, adds Start Menu shortcuts with the CyANTs icon, bootstraps Miniforge if needed, creates or repairs the `cyants` conda environment, then launches the GUI.
-
-Use the provided `CyANTs_Setup.exe` from the GitHub Actions artifact, release, or lab share:
-
-1. Download `CyANTs_Setup.exe`.
-2. Double-click it. No administrator rights should be needed because it installs for the current user.
-3. Leave `Create or update the CyANTs conda environment now` checked on the final installer page.
-4. Leave `Launch CyANTs GUI` checked if you want the GUI to open automatically after the environment setup finishes.
-5. Use the `CyANTs GUI` desktop icon or Start Menu shortcut to reopen the GUI later.
-6. Use `Install or Repair CyANTs` from the Start Menu later if packages break or the environment needs to be recreated.
-
-Uninstall safety: Windows uninstall removes the CyANTs application files and shortcuts only. It does not delete Miniforge, the `cyants` conda environment, project folders, registered TIFFs, `.ims` data, or files under your `Reg` output directories. Remove those manually only when you are sure they are no longer needed.
-
-The installer includes shortcuts for:
-
-- `CyANTs GUI`
-- `Install or Repair CyANTs`
-- `Update CyANTs`
-
-If conda is not found, the installer or repair shortcut downloads and installs Miniforge for the current user, then creates or updates the `cyants` environment from `environment.yml`.
-
-`CyANTs.exe` may also be provided as a portable GUI launcher, but for a new shared PC use `CyANTs_Setup.exe`.
 
 ## Voxel Spacing
 
@@ -210,7 +132,7 @@ export CYANTS_DISABLE_IMS_PYRAMID=1
 Do not assume every cycle has four channels. For both ROI and whole-volume registered TIFF output:
 
 - `--ch` lists the source channels that actually exist and should be exported.
-- `--co` is the first Imaris output channel number for that cycle (channel order).
+- `--co` is the first Imaris output channel number for that cycle.
 - Selected source channels are packed consecutively from `--co`, regardless of their original channel numbers.
 - The next cycle's `--co` equals the previous cycle's `--co` plus the number of channels actually exported.
 
@@ -274,11 +196,11 @@ Cycle0_DAPI_fixed_crop.nrrd
 
 The fixed crop may be `.nrrd`, `.tif`, or `.tiff`. NRRD is useful if you already verified ANTs spacing/geometry; TIFF is fine if spacing is supplied with `--spacing 0.711`.
 
-### Step 2: Save Moving-Cycle ROI Coordinates In Fiji
+### Step 2: Place The Moving-Cycle ROI In Fiji/ImageJ
 
-For each moving cycle:
+For each moving cycle, create an `XY_Coordinates.csv` from the full image coordinate system:
 
-1. Open that cycle's DAPI channel in Fiji, preferably from the full image coordinate system.
+1. Open that cycle's DAPI channel in Fiji/ImageJ.
 2. Draw the ROI around the matching region in that moving cycle.
 3. Right-click the ROI and choose `Properties`.
 4. Check `List coordinates`.
@@ -288,6 +210,18 @@ For each moving cycle:
 ```text
 G:\HIVE_BRAVO\DALISPIM\phytagel_SILT\Reg\cycles\cycle_003\roi\XY_Coordinates.csv
 ```
+
+The saved CSV uses full-resolution original `.ims` coordinates and has the same simple Fiji/ImageJ table format:
+
+```text
+X,Y
+4824,138
+7170,138
+7170,2268
+4824,2268
+```
+
+Only X/Y corners are needed. No Z range is needed by default; the ROI extractor uses the full available Z depth for that moving cycle.
 
 The CSV should contain full-image `X,Y` pixel coordinates like:
 
@@ -300,8 +234,6 @@ X,Y
 ```
 
 Do not save coordinates from a cropped Fiji window if the coordinates were reset to the cropped image origin. The script uses these coordinates to extract the ROI from the original `.ims`, so they must refer to the moving cycle's full source image.
-
-No Z range is needed by default. The script uses the full available Z depth for that moving cycle ROI.
 
 ### Step 3: Run ROI Registration And Channel Application
 

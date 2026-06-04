@@ -53,10 +53,22 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--fixed-crop",
         default="",
-        help="Cached reference DAPI ROI crop (.nrrd, .tif, or .tiff). Default: infer one non-registered crop from reference/roi",
+        help=(
+            "Cached reference DAPI ROI crop (.nrrd, .tif, or .tiff), or a fixed/reference .ims source "
+            "when --fixed-roi-csv is supplied. Default: infer one non-registered crop from reference/roi"
+        ),
+    )
+    parser.add_argument(
+        "--fixed-roi-csv",
+        default="",
+        help=(
+            "Reference/template ROI CSV used when --fixed-crop points to a full fixed .ims. "
+            "The fixed ROI is streamed directly from the .ims using these full-image X,Y coordinates."
+        ),
     )
     parser.add_argument("--channels", "--ch", type=parse_channels, default=parse_channels("0-3"), help="Channels to register/output, for example 0-3. Default: 0-3")
     parser.add_argument("--dapi-channel", "--dapi", type=int, default=0, help="Moving DAPI channel used to estimate transforms. Default: 0")
+    parser.add_argument("--fixed-dapi-channel", type=int, default=0, help="Fixed/reference DAPI channel when --fixed-crop is a .ims source. Default: 0")
     parser.add_argument(
         "--source-map",
         default="",
@@ -92,6 +104,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-pixeltype", choices=["uint16", "float32"], default="uint16", help="Registered output pixel type. Default: uint16")
     parser.add_argument("--uint16-scaling", "--u16", choices=["clip", "minmax", "robust"], default="clip", help="uint16 conversion. Default: clip to preserve intensity range")
     parser.add_argument("--save-raw-roi", action="store_true", help="Also write unregistered extracted ROI NRRDs for debugging. Default: keep ROI crops in memory only")
+    parser.add_argument("--cache-fixed-roi", action="store_true", help="When --fixed-crop is a full .ims, also write the extracted fixed ROI TIFF under reference/roi for reuse")
     parser.add_argument("--apply-only", "--ao", action="store_true", help="Reuse existing DAPI transforms and only extract/apply requested channels")
     parser.add_argument("--no-qc", dest="qc", action="store_false", default=True, help="Disable DAPI center-slice QC PNG output")
     parser.add_argument("--open-qc", action="store_true", help="Open DAPI QC PNG after it is written")
@@ -177,6 +190,52 @@ def extract_channel_in_memory(args, channel: int, source_map: dict[int, Path], t
     return sitk_to_ants(sitk_img), source_path
 
 
+def load_fixed_roi(args, fixed_crop_path: Path, project_root: Path, progress_interval: float):
+    import ants
+
+    suffix = fixed_crop_path.suffix.lower()
+    if suffix != ".ims":
+        with progress_heartbeat("load fixed ROI", progress_interval):
+            return ants.image_read(str(fixed_crop_path)), str(fixed_crop_path), None
+
+    fixed_roi_csv = Path(args.fixed_roi_csv).expanduser().resolve() if args.fixed_roi_csv else None
+    if fixed_roi_csv is None or not fixed_roi_csv.exists():
+        raise ValueError(
+            "--fixed-crop points to a full .ims file, so --fixed-roi-csv is required. "
+            "Pass the Cycle0/reference XY_Coordinates.csv with --fixed-roi-csv, "
+            "or choose a cached fixed crop .nrrd/.tif instead of the full .ims."
+        )
+
+    fixed_spec = build_channel_spec(args, fixed_crop_path, args.fixed_dapi_channel)
+    fixed_roi = parse_xy_coordinates_csv(fixed_roi_csv, args.z_range, (0, fixed_spec.shape_zyx[0]))
+    fixed_tile = tile_from_roi(fixed_roi)
+    print(
+        f"[roi-cycle] fixed crop is a full .ims; streaming fixed DAPI ROI from channel {args.fixed_dapi_channel}: "
+        f"{fixed_crop_path}",
+        flush=True,
+    )
+    print(f"[roi-cycle] fixed ROI CSV={fixed_roi_csv}", flush=True)
+    print(f"[roi-cycle] fixed ROI xyz exclusive={fixed_roi}", flush=True)
+    with progress_heartbeat("extract fixed ROI from .ims", progress_interval):
+        sitk_img = read_channel_tile_from_spec(fixed_spec, fixed_tile)
+    print_sitk_stats("[roi-cycle] fixed ROI extracted from .ims", sitk_img)
+    fixed = sitk_to_ants(sitk_img)
+
+    fixed_manifest_path = str(fixed_crop_path)
+    if args.cache_fixed_roi:
+        reference_roi_dir = project_root / "reference" / "roi"
+        reference_roi_dir.mkdir(parents=True, exist_ok=True)
+        cached_path = reference_roi_dir / f"{fixed_crop_path.stem}_ch{args.fixed_dapi_channel}_roi_from_csv.tif"
+        if not cached_path.exists():
+            print(f"[roi-cycle] caching extracted fixed ROI for reuse: {cached_path}", flush=True)
+            with progress_heartbeat("write cached fixed ROI TIFF", progress_interval):
+                sitk.WriteImage(sitk_img, str(cached_path))
+        else:
+            print(f"[roi-cycle] cached fixed ROI already exists: {cached_path}", flush=True)
+        fixed_manifest_path = str(cached_path)
+    return fixed, fixed_manifest_path, fixed_roi
+
+
 def output_channel_number(channels: list[int], channel: int, channel_offset: int) -> int:
     try:
         selected_index = channels.index(channel)
@@ -251,10 +310,9 @@ def main() -> int:
     print(f"[roi-cycle] output dir={layout['output_dir']}", flush=True)
 
     stage_start = time.time()
-    with progress_heartbeat("load fixed ROI", args.progress_interval):
-        fixed = ants.image_read(str(fixed_crop_path))
+    fixed, fixed_crop_manifest_path, fixed_roi = load_fixed_roi(args, fixed_crop_path, project_root, args.progress_interval)
     describe_image("[roi-cycle] fixed ROI", fixed)
-    record_timing(timings, "load fixed ROI", stage_start)
+    record_timing(timings, "load/extract fixed ROI", stage_start)
 
     manifest = None
     dapi_moving = None
@@ -288,7 +346,10 @@ def main() -> int:
         manifest = {
             "mode": "direct_csv_roi_from_source",
             "cycle_id": args.cycle_id,
-            "fixed_crop": str(fixed_crop_path),
+            "fixed_crop": fixed_crop_manifest_path,
+            "fixed_source": str(fixed_crop_path),
+            "fixed_roi_csv": str(Path(args.fixed_roi_csv).expanduser().resolve()) if args.fixed_roi_csv else "",
+            "fixed_roi_xyz_exclusive": fixed_roi,
             "moving_source": str(dapi_source_path),
             "roi_csv": str(saved_csv),
             "roi_xyz_exclusive": roi,
@@ -402,7 +463,10 @@ def main() -> int:
         "cycle_id": args.cycle_id,
         "moving_source": str(Path(args.moving_source).expanduser().resolve()),
         "saved_roi_csv": str(saved_csv),
-        "fixed_crop": str(fixed_crop_path),
+        "fixed_crop": fixed_crop_manifest_path,
+        "fixed_source": str(fixed_crop_path),
+        "fixed_roi_csv": str(Path(args.fixed_roi_csv).expanduser().resolve()) if args.fixed_roi_csv else "",
+        "fixed_roi_xyz_exclusive": fixed_roi,
         "roi_xyz_exclusive": roi,
         "channel_offset": args.channel_offset,
         "output_channel_map": output_channel_map,

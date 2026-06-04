@@ -213,6 +213,14 @@ def _available_ims_resolution_levels(h5f: "h5py.File") -> List[int]:
     return sorted(levels)
 
 
+def available_ims_resolution_levels(path: Path) -> List[int]:
+    """Return available Imaris pyramid resolution level indices for an .ims file."""
+    if h5py is None:
+        raise RuntimeError("Reading .ims requires h5py. Install with: pip install h5py")
+    with h5py.File(str(path), "r") as h5f:
+        return _available_ims_resolution_levels(h5f)
+
+
 def _stride_expected_shape(shape_zyx: Tuple[int, int, int], stride_zyx: Tuple[int, int, int]) -> Tuple[int, int, int]:
     return tuple((size + max(1, int(stride)) - 1) // max(1, int(stride)) for size, stride in zip(shape_zyx, stride_zyx))
 
