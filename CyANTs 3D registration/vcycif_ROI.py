@@ -54,7 +54,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--fixed-crop",
         default="",
         help=(
-            "Cached reference DAPI ROI crop (.nrrd, .tif, or .tiff), or a fixed/reference .ims source "
+            "Cached reference DAPI ROI crop (.nrrd, .tif/.tiff, .nii, or .nii.gz), or a fixed/reference .ims source "
             "when --fixed-roi-csv is supplied. Default: infer one non-registered crop from reference/roi"
         ),
     )
@@ -104,7 +104,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-pixeltype", choices=["uint16", "float32"], default="uint16", help="Registered output pixel type. Default: uint16")
     parser.add_argument("--uint16-scaling", "--u16", choices=["clip", "minmax", "robust"], default="clip", help="uint16 conversion. Default: clip to preserve intensity range")
     parser.add_argument("--save-raw-roi", action="store_true", help="Also write unregistered extracted ROI NRRDs for debugging. Default: keep ROI crops in memory only")
-    parser.add_argument("--cache-fixed-roi", action="store_true", help="When --fixed-crop is a full .ims, also write the extracted fixed ROI TIFF under reference/roi for reuse")
+    parser.add_argument("--cache-fixed-roi", action="store_true", help="When --fixed-crop is a full .ims, also write the extracted fixed ROI under reference/roi for reuse")
+    parser.add_argument(
+        "--cache-fixed-roi-format",
+        choices=["nrrd", "tif", "tiff", "nii", "nii.gz"],
+        default="nrrd",
+        help="Format for --cache-fixed-roi when extracting the fixed ROI from a full .ims. Default: nrrd",
+    )
     parser.add_argument("--apply-only", "--ao", action="store_true", help="Reuse existing DAPI transforms and only extract/apply requested channels")
     parser.add_argument("--no-qc", dest="qc", action="store_false", default=True, help="Disable DAPI center-slice QC PNG output")
     parser.add_argument("--open-qc", action="store_true", help="Open DAPI QC PNG after it is written")
@@ -122,10 +128,17 @@ def record_timing(timings: list[dict], stage: str, start: float, **extra) -> flo
     return elapsed
 
 
+def image_suffix(path: Path) -> str:
+    name = path.name.lower()
+    if name.endswith(".nii.gz"):
+        return ".nii.gz"
+    return path.suffix.lower()
+
+
 def infer_fixed_crop(project_root: Path) -> Path:
     roi_dir = project_root / "reference" / "roi"
     candidates = []
-    for path in sorted(path for pattern in ("*.nrrd", "*.tif", "*.tiff") for path in roi_dir.glob(pattern)):
+    for path in sorted(path for pattern in ("*.nrrd", "*.tif", "*.tiff", "*.nii", "*.nii.gz") for path in roi_dir.glob(pattern)):
         name = path.name.lower()
         if "registered" in name or "_roi_raw" in name:
             continue
@@ -193,7 +206,7 @@ def extract_channel_in_memory(args, channel: int, source_map: dict[int, Path], t
 def load_fixed_roi(args, fixed_crop_path: Path, project_root: Path, progress_interval: float):
     import ants
 
-    suffix = fixed_crop_path.suffix.lower()
+    suffix = image_suffix(fixed_crop_path)
     if suffix != ".ims":
         with progress_heartbeat("load fixed ROI", progress_interval):
             return ants.image_read(str(fixed_crop_path)), str(fixed_crop_path), None
@@ -203,7 +216,7 @@ def load_fixed_roi(args, fixed_crop_path: Path, project_root: Path, progress_int
         raise ValueError(
             "--fixed-crop points to a full .ims file, so --fixed-roi-csv is required. "
             "Pass the Cycle0/reference XY_Coordinates.csv with --fixed-roi-csv, "
-            "or choose a cached fixed crop .nrrd/.tif instead of the full .ims."
+            "or choose a cached fixed crop .nrrd/.tif/.nii instead of the full .ims."
         )
 
     fixed_spec = build_channel_spec(args, fixed_crop_path, args.fixed_dapi_channel)
@@ -225,10 +238,12 @@ def load_fixed_roi(args, fixed_crop_path: Path, project_root: Path, progress_int
     if args.cache_fixed_roi:
         reference_roi_dir = project_root / "reference" / "roi"
         reference_roi_dir.mkdir(parents=True, exist_ok=True)
-        cached_path = reference_roi_dir / f"{fixed_crop_path.stem}_ch{args.fixed_dapi_channel}_roi_from_csv.tif"
+        cache_format = args.cache_fixed_roi_format
+        extension = ".nii.gz" if cache_format == "nii.gz" else f".{cache_format}"
+        cached_path = reference_roi_dir / f"{fixed_crop_path.stem}_ch{args.fixed_dapi_channel}_roi_from_csv{extension}"
         if not cached_path.exists():
             print(f"[roi-cycle] caching extracted fixed ROI for reuse: {cached_path}", flush=True)
-            with progress_heartbeat("write cached fixed ROI TIFF", progress_interval):
+            with progress_heartbeat(f"write cached fixed ROI {cache_format}", progress_interval):
                 sitk.WriteImage(sitk_img, str(cached_path))
         else:
             print(f"[roi-cycle] cached fixed ROI already exists: {cached_path}", flush=True)
