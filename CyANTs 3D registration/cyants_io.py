@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Developed by Alex Wong
+# Cite: Volumetric Cyclic Immunofluorescence for 3D Spatial Profiling of Immune Structures in
+# Preprint: https://doi.org/10.64898/2026.05.17.725158
+# Registration method: ANTsX/ANTsPy - https://github.com/ANTsX/ANTsPy
+
 """Shared I/O and tiling utilities for CyANTs microscopy workflows."""
 
 from __future__ import annotations

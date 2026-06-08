@@ -8,6 +8,15 @@ CyANTs is an ANTsPy-based workflow for registering large multichannel CyCIF / li
 
 Registration is performed with ANTsPy (`TRSAA`, rigid/affine stages, and SyN variants). Image reading, virtual tile extraction, and TIFF writing are implemented in Python with `h5py`, `SimpleITK`, and `tifffile`.
 
+## Attribution and Citation
+
+Developed by Alex Wong.
+
+When using this workflow, please cite:
+
+- **Volumetric Cyclic Immunofluorescence for 3D Spatial Profiling of Immune Structures in**. Preprint: [https://doi.org/10.64898/2026.05.17.725158](https://doi.org/10.64898/2026.05.17.725158)
+- [ANTsX/ANTsPy](https://github.com/ANTsX/ANTsPy) for the registration method.
+
 ## Windows Environment
 
 Recommended local folder and conda environment:
