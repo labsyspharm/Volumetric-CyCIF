@@ -363,6 +363,13 @@ def load_existing_transform(tx_dir: Path, channel: int, reference_channel: int) 
 
 def main() -> int:
     args = build_parser().parse_args()
+    transform_aliases = {
+        "quicksyn": "antsRegistrationSyNQuick[s]",
+    }
+    requested_transform = args.transform
+    args.transform = transform_aliases.get(args.transform.lower(), args.transform)
+    if args.transform != requested_transform:
+        print(f"[whole-ims] transform alias {requested_transform} -> {args.transform}", flush=True)
     args.source_map_parsed = parse_source_map(args.moving_source_map)
     configure_ants_runtime(args.threads)
     import ants
