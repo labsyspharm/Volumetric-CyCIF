@@ -8,6 +8,7 @@ dependencies:
   - simpleitk
   - h5py
   - tifffile
+  - tqdm
   - pillow
   - pip:
       - antspyx

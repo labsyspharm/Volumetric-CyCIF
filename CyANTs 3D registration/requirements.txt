@@ -2,6 +2,7 @@ numpy
 SimpleITK
 h5py
 tifffile
+tqdm
 antspyx
 paramiko
 Pillow
