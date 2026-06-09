@@ -56,6 +56,7 @@ def main() -> int:
         if dataset.ndim != 3:
             raise ValueError(f"Expected a 3D ZYX dataset, found shape={dataset.shape}")
         z_size, y_size, x_size = (int(v) for v in dataset.shape)
+        expected_shape = (z_size, y_size, x_size)
         block_z = min(block_z, z_size)
         buffer = np.empty((block_z, y_size, x_size), dtype=dataset.dtype)
         gib = dataset.size * dataset.dtype.itemsize / 1024**3
@@ -84,7 +85,19 @@ def main() -> int:
     elapsed = time.time() - started
     print(f"[export] finished in {elapsed / 60:.1f} min: {output}", flush=True)
     with tifffile.TiffFile(output) as tif:
-        print(f"[export] verification shape={tif.series[0].shape} axes={tif.series[0].axes}", flush=True)
+        actual_shape = tuple(int(v) for v in tif.series[0].shape)
+        page_count = len(tif.pages)
+        axes = tif.series[0].axes
+    if actual_shape != expected_shape or page_count != z_size:
+        raise RuntimeError(
+            f"Export dimension verification failed: source shape={expected_shape}, "
+            f"TIFF shape={actual_shape}, TIFF pages={page_count}, expected pages={z_size}"
+        )
+    print(
+        f"[export] dimension verification passed: source={expected_shape} "
+        f"TIFF={actual_shape} pages={page_count} axes={axes}",
+        flush=True,
+    )
     return 0
 
 
