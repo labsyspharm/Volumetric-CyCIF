@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import gc
 import json
 import time
@@ -20,10 +21,12 @@ import tifffile
 
 from ants_roi_quicksyn import (
     ants_to_sitk_uint16,
+    compute_similarity_metrics_from_images,
     configure_ants_runtime,
     export_center_slice_qc,
     format_duration,
     progress_heartbeat,
+    write_metrics_json,
 )
 from extract_ims_roi_channels import parse_channels
 from cyants_io import (
@@ -91,6 +94,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--no-qc", dest="qc", action="store_false", help="Disable center-slice QC PNG output")
     parser.set_defaults(qc=True)
+    parser.add_argument(
+        "--no-metrics",
+        dest="metrics",
+        action="store_false",
+        help="Disable before/after whole-volume similarity metrics. Metrics are enabled by default.",
+    )
+    parser.set_defaults(metrics=True)
     parser.add_argument("--open-qc", action="store_true", help="Open QC PNGs after writing them")
     parser.add_argument("--qc-max-panel-side", type=int, default=900, help="Maximum QC panel side. Default: 900")
     parser.add_argument(
@@ -384,7 +394,7 @@ def main() -> int:
         else out_dir / "fullres_aligned_tif"
     )
     tx_dir.mkdir(parents=True, exist_ok=True)
-    if args.qc:
+    if args.qc or args.metrics:
         qc_dir.mkdir(parents=True, exist_ok=True)
     if args.write_aligned_tif:
         tif_dir.mkdir(parents=True, exist_ok=True)
@@ -437,7 +447,7 @@ def main() -> int:
         flush=True,
     )
     fixed = None
-    if not args.apply_only or args.write_aligned_tif or args.qc:
+    if not args.apply_only or args.write_aligned_tif or args.qc or args.metrics:
         with progress_heartbeat("whole-ims load reference downsampled", args.progress_interval):
             ref_sitk = read_ims_downsampled_from_spec(ref_spec, stride_zyx)
         fixed = sitk_to_ants(ref_sitk)
@@ -445,6 +455,7 @@ def main() -> int:
         gc.collect()
 
     manifests = {}
+    metrics_summary = []
     for channel in args.channels:
         if channel == args.reference_channel:
             print(f"[whole-ims] skipping reference channel {channel}", flush=True)
@@ -498,7 +509,7 @@ def main() -> int:
 
         aligned_tif_path = ""
         fullres_tif_path = ""
-        if args.qc or args.write_aligned_tif:
+        if args.qc or args.metrics or args.write_aligned_tif:
             if moving is None:
                 with progress_heartbeat(f"whole-ims load ch{channel} downsampled", args.progress_interval):
                     moving_sitk = read_ims_downsampled_from_spec(moving_spec, stride_zyx)
@@ -527,6 +538,34 @@ def main() -> int:
                     args.open_qc,
                     args.qc_max_panel_side,
                 )
+            if args.metrics:
+                metrics = {
+                    "computed_on": f"whole_volume_downsampled_{stride}x",
+                    "reference_channel": args.reference_channel,
+                    "moving_channel": channel,
+                    "transform": args.transform,
+                    "interpretation": "higher ncc/nmi is better; lower nrmse is better",
+                    "before": compute_similarity_metrics_from_images(fixed, moving),
+                    "after": compute_similarity_metrics_from_images(fixed, aligned),
+                }
+                metrics_path = qc_dir / f"whole_ims_ch{channel}_to_ch{args.reference_channel}_similarity_metrics.json"
+                write_metrics_json(metrics_path, metrics)
+                payload["similarity_metrics_json"] = str(metrics_path)
+                metrics_summary.append(
+                    {
+                        "reference_channel": args.reference_channel,
+                        "moving_channel": channel,
+                        "transform": args.transform,
+                        "downsample_factor": stride,
+                        "before_ncc": metrics["before"]["ncc"],
+                        "after_ncc": metrics["after"]["ncc"],
+                        "before_nmi": metrics["before"]["nmi"],
+                        "after_nmi": metrics["after"]["nmi"],
+                        "before_nrmse": metrics["before"]["nrmse"],
+                        "after_nrmse": metrics["after"]["nrmse"],
+                    }
+                )
+                transform_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
             if args.write_aligned_tif:
                 tif_path = tif_dir / f"ch{channel}_to_ch{args.reference_channel}_wholeims_ds{stride}_aligned.tif"
                 write_aligned_tif(aligned, tif_path, args.uint16_scaling, args.progress_interval)
@@ -563,6 +602,13 @@ def main() -> int:
     manifest_path = out_dir / "whole_ims_intracycle_manifest.json"
     manifest_path.write_text(json.dumps({"transforms": manifests}, indent=2), encoding="utf-8")
     print(f"[whole-ims] wrote run manifest: {manifest_path}", flush=True)
+    if metrics_summary:
+        summary_path = out_dir / "whole_ims_intracycle_similarity_metrics.csv"
+        with summary_path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=list(metrics_summary[0]))
+            writer.writeheader()
+            writer.writerows(metrics_summary)
+        print(f"[whole-ims] wrote similarity metrics summary: {summary_path}", flush=True)
     print(f"[whole-ims] done in {format_duration(time.time() - start)}", flush=True)
     return 0
 
