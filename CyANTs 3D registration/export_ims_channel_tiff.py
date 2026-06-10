@@ -26,6 +26,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--level", type=int, default=0, help="Imaris resolution level. Default: 0")
     parser.add_argument("--timepoint", type=int, default=0, help="Imaris timepoint. Default: 0")
     parser.add_argument(
+        "--conform-to-tif",
+        default="",
+        help=(
+            "Optional aligned TIFF whose ZYX dimensions the exported template must match. "
+            "Smaller source dimensions are zero-padded and larger source dimensions are cropped "
+            "at their high-index ends."
+        ),
+    )
+    parser.add_argument(
         "--block-z",
         "--bz",
         type=int,
@@ -46,6 +55,16 @@ def main() -> int:
         raise FileExistsError(f"Output already exists; pass --overwrite to replace it: {output}")
     output.parent.mkdir(parents=True, exist_ok=True)
 
+    conform_path = Path(args.conform_to_tif).expanduser().resolve() if args.conform_to_tif else None
+    target_shape = None
+    if conform_path:
+        if not conform_path.exists():
+            raise FileNotFoundError(conform_path)
+        with tifffile.TiffFile(conform_path) as tif:
+            target_shape = tuple(int(v) for v in tif.series[0].shape)
+        if len(target_shape) != 3:
+            raise ValueError(f"--conform-to-tif must contain one 3D stack, found shape={target_shape}")
+
     dataset_key = f"DataSet/ResolutionLevel {args.level}/TimePoint {args.timepoint}/Channel {args.ch}/Data"
     block_z = max(1, int(args.block_z))
     started = time.time()
@@ -55,24 +74,42 @@ def main() -> int:
         dataset = handle[dataset_key]
         if dataset.ndim != 3:
             raise ValueError(f"Expected a 3D ZYX dataset, found shape={dataset.shape}")
-        z_size, y_size, x_size = (int(v) for v in dataset.shape)
-        expected_shape = (z_size, y_size, x_size)
-        block_z = min(block_z, z_size)
-        buffer = np.empty((block_z, y_size, x_size), dtype=dataset.dtype)
+        source_shape = tuple(int(v) for v in dataset.shape)
+        source_z, source_y, source_x = source_shape
+        expected_shape = target_shape or source_shape
+        target_z, target_y, target_x = expected_shape
+        block_z = min(block_z, target_z)
+        buffer = np.empty((block_z, target_y, target_x), dtype=dataset.dtype)
         gib = dataset.size * dataset.dtype.itemsize / 1024**3
         print(
             f"[export] source=/{dataset_key} shape_zyx={dataset.shape} dtype={dataset.dtype} "
             f"size={gib:.2f} GiB block_z={block_z}",
             flush=True,
         )
+        if conform_path:
+            changes = tuple(target - source for source, target in zip(source_shape, expected_shape))
+            print(
+                f"[export] conforming to {conform_path}: target_shape_zyx={expected_shape} "
+                f"dimension_changes_zyx={changes}; padding/cropping at high-index ends",
+                flush=True,
+            )
         print(f"[export] output={output}", flush=True)
 
         with tifffile.TiffWriter(output, bigtiff=True) as writer:
-            with tqdm(total=z_size, unit="plane", desc=f"export ch{args.ch}", dynamic_ncols=True) as progress:
-                for z0 in range(0, z_size, block_z):
-                    z1 = min(z_size, z0 + block_z)
+            with tqdm(total=target_z, unit="plane", desc=f"export ch{args.ch}", dynamic_ncols=True) as progress:
+                for z0 in range(0, target_z, block_z):
+                    z1 = min(target_z, z0 + block_z)
                     view = buffer[: z1 - z0]
-                    dataset.read_direct(view, source_sel=np.s_[z0:z1, :, :])
+                    view.fill(0)
+                    source_z1 = min(z1, source_z)
+                    copy_y = min(target_y, source_y)
+                    copy_x = min(target_x, source_x)
+                    if z0 < source_z1 and copy_y > 0 and copy_x > 0:
+                        dataset.read_direct(
+                            view,
+                            source_sel=np.s_[z0:source_z1, :copy_y, :copy_x],
+                            dest_sel=np.s_[: source_z1 - z0, :copy_y, :copy_x],
+                        )
                     writer.write(
                         view,
                         photometric="minisblack",
@@ -88,13 +125,13 @@ def main() -> int:
         actual_shape = tuple(int(v) for v in tif.series[0].shape)
         page_count = len(tif.pages)
         axes = tif.series[0].axes
-    if actual_shape != expected_shape or page_count != z_size:
+    if actual_shape != expected_shape or page_count != expected_shape[0]:
         raise RuntimeError(
-            f"Export dimension verification failed: source shape={expected_shape}, "
-            f"TIFF shape={actual_shape}, TIFF pages={page_count}, expected pages={z_size}"
+            f"Export dimension verification failed: source shape={source_shape}, target shape={expected_shape}, "
+            f"TIFF shape={actual_shape}, TIFF pages={page_count}, expected pages={expected_shape[0]}"
         )
     print(
-        f"[export] dimension verification passed: source={expected_shape} "
+        f"[export] dimension verification passed: source={source_shape} target={expected_shape} "
         f"TIFF={actual_shape} pages={page_count} axes={axes}",
         flush=True,
     )
