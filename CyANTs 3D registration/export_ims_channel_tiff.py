@@ -26,10 +26,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--level", type=int, default=0, help="Imaris resolution level. Default: 0")
     parser.add_argument("--timepoint", type=int, default=0, help="Imaris timepoint. Default: 0")
     parser.add_argument(
+        "--conform-to",
         "--conform-to-tif",
+        dest="conform_to",
         default="",
         help=(
-            "Optional aligned TIFF whose ZYX dimensions the exported template must match. "
+            "Optional aligned TIFF or .ims whose ZYX dimensions the exported template must match. "
             "Smaller source dimensions are zero-padded and larger source dimensions are cropped "
             "at their high-index ends."
         ),
@@ -45,6 +47,27 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def read_conform_shape(path: Path, level: int, timepoint: int) -> tuple[int, int, int]:
+    if path.suffix.lower() == ".ims":
+        group_key = f"DataSet/ResolutionLevel {level}/TimePoint {timepoint}"
+        with h5py.File(path, "r") as handle:
+            if group_key not in handle:
+                raise KeyError(f"Conform .ims group not found: /{group_key}")
+            group = handle[group_key]
+            channel_names = sorted(name for name in group if name.lower().startswith("channel "))
+            if not channel_names:
+                raise KeyError(f"No channels found under conform .ims group: /{group_key}")
+            dataset = group[channel_names[0]].get("Data")
+            if dataset is None or dataset.ndim != 3:
+                raise ValueError(f"Conform .ims channel does not contain one 3D Data volume: {channel_names[0]}")
+            return tuple(int(v) for v in dataset.shape)
+    with tifffile.TiffFile(path) as tif:
+        shape = tuple(int(v) for v in tif.series[0].shape)
+    if len(shape) != 3:
+        raise ValueError(f"--conform-to must contain one 3D stack, found shape={shape}")
+    return shape
+
+
 def main() -> int:
     args = build_parser().parse_args()
     source = Path(args.ims).expanduser().resolve()
@@ -55,15 +78,12 @@ def main() -> int:
         raise FileExistsError(f"Output already exists; pass --overwrite to replace it: {output}")
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    conform_path = Path(args.conform_to_tif).expanduser().resolve() if args.conform_to_tif else None
+    conform_path = Path(args.conform_to).expanduser().resolve() if args.conform_to else None
     target_shape = None
     if conform_path:
         if not conform_path.exists():
             raise FileNotFoundError(conform_path)
-        with tifffile.TiffFile(conform_path) as tif:
-            target_shape = tuple(int(v) for v in tif.series[0].shape)
-        if len(target_shape) != 3:
-            raise ValueError(f"--conform-to-tif must contain one 3D stack, found shape={target_shape}")
+        target_shape = read_conform_shape(conform_path, args.level, args.timepoint)
 
     dataset_key = f"DataSet/ResolutionLevel {args.level}/TimePoint {args.timepoint}/Channel {args.ch}/Data"
     block_z = max(1, int(args.block_z))
