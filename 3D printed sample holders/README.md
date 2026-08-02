@@ -40,11 +40,17 @@ below the plate rim.
 - Well pitch 26.00 mm, well Ø ≈ 22.05 mm (bottom area 382 mm²)
 - #1.5 glass-like polymer coverslip bottom (0.175 mm)
 
-## Fabrication notes
+## 3D printing notes
 
-- The scaled 12-well frame teeth are ~0.6–1.2 mm — verify printability before fabrication.
-- The 0.2 mm stamp clearance is measured to the nominal window walls; the frame
-  teeth protrude further, so confirm stamp/teeth interference for your application.
+- Both the **6-well** and **12-well Spacers** were printed on a **Dremel 3D45**
+  using **translucent PETG** filament at **high quality (0.1 mm layer height)**
+  settings.
+- The fine internal features of the **12-well Spacer** are ~0.6–1.2 mm — verify
+  printability before fabrication, as these approach the resolution limit at
+  0.1 mm layer height.
+- The 0.2 mm stamp clearance is measured to the nominal window walls; the
+  **12-well Spacer** features protrude further, so confirm stamp/spacer
+  interference for your application.
 - Well and plate dimensions follow published Cellvis specifications; confirm
   against your specific plate lot before committing to glass.
 
