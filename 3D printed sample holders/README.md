@@ -2,35 +2,37 @@
 
 3D-printable sample holders used to mount FFPE tissue for volumetric cyclic
 immunofluorescence imaging. Each holder consists of a **circular spacer** that
-seats into a glass-bottom multiwell plate and a **glass stamp** (sample insert)
-that carries the specimen against the coverslip.
+seats into a glass-bottom multiwell plate and a **tissue stamp** that holds the
+specimen in place against the coverslip. The stamp prevents the tissue from
+drifting between channel acquisitions and ensures the tissue stays close to the
+coverslip.
 
 Two formats are provided: a **6-well** version and a **12-well** version scaled
 to the Cellvis 12-well glass-bottom plate (ANSI/SBS 1-2004).
 
 ## 6-well plate
 
-![6-well plate with circular spacer and glass stamp](6-well_rendering.png)
+![6-well plate with circular spacer and tissue stamp](6-well_rendering.png)
 
 | File | Description | Key dimensions |
 | --- | --- | --- |
 | `6-well_circular_spacer.stl` | Circular spacer disc that seats over a well and holds the stamp | Ø34.0 × 10.0 mm |
-| `6-well_glass_stamp.stl` | Glass stamp / sample insert | 24.60 × 15.60 × 16.00 mm |
+| `6-well_tissue_stamp.stl` | Tissue stamp — holds the specimen against the coverslip | 24.60 × 15.60 × 16.00 mm |
 | `6-well_rendering.png` | Assembly rendering | — |
 
 ## 12-well plate
 
-![12-well plate with circular spacer and glass stamp seated in well A1](12-well_rendering.png)
+![12-well plate with circular spacer and tissue stamp seated in well A1](12-well_rendering.png)
 
 Scaled from the 6-well design by a uniform **0.588×** to fit the smaller well.
-The glass stamp footprint is **0.522×** of the original, with its **main body
+The tissue stamp footprint is **0.522×** of the original, with its **main body
 lengthened** so the assembly rests on the glass floor and the handle sits 1 mm
 below the plate rim.
 
 | File | Description | Key dimensions |
 | --- | --- | --- |
 | `12-well_circular_spacer.stl` | Circular spacer that seats inside a 12-well well | Ø20.0 × 5.88 mm — **1.0 mm** radial clearance to the Ø22.05 well |
-| `12-well_glass_stamp.stl` | Glass stamp / sample insert (lengthened body) | 12.84 × 8.14 × **18.12 mm** — **0.2 mm** to window walls; rests on the glass floor, handle **1 mm** below the rim |
+| `12-well_tissue_stamp.stl` | Tissue stamp — holds the specimen against the coverslip (lengthened body) | 12.84 × 8.14 × **18.12 mm** — **0.2 mm** to window walls; rests on the glass floor, handle **1 mm** below the rim |
 | `12-well_cellvis_reference.stl` | Dimensional reference of the Cellvis 12-well plate (reference only — not for printing) | 127.50 × 85.35 × 19.95 mm; 12 wells Ø22.05 @ 26 mm pitch (4×3) |
 | `12-well_rendering.png` | Assembly view (spacer + stamp seated in well A1) | — |
 
