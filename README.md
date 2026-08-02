@@ -118,6 +118,7 @@ Each file is expected to correspond to a specimen, sample, or derived analysis o
 
 - `README.md`: Project landing page and dataset information template.
 - `CyANTs 3D registration/`: ANTsPy-based 3D registration workflow for large multichannel CyCIF / light-sheet Imaris volumes.
+- `3D printed sample holders/`: 3D-printable circular spacers and glass stamps for mounting FFPE tissue in 6-well and 12-well glass-bottom plates.
 
 ## ADDITIONAL NOTES/COMMENTS
 
