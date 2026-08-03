@@ -16,8 +16,8 @@ to the Cellvis 12-well glass-bottom plate (ANSI/SBS 1-2004).
 
 | File | Description | Key dimensions |
 | --- | --- | --- |
-| `6-well_circular_spacer.stl` | Circular spacer disc that seats over a well and holds the stamp | Ø34.0 × 10.0 mm |
-| `6-well_tissue_stamp.stl` | Tissue stamp — holds the specimen against the coverslip | 24.60 × 15.60 × 16.00 mm |
+| `6-well_circular_spacer.stl` | Circular spacer disc that seats over a well and holds the stamp | Ø34.0 × 10.0 mm; inner sample window **27.00 × 17.00 mm** |
+| `6-well_tissue_stamp.stl` | Tissue stamp — holds the specimen against the coverslip | 24.60 × 15.60 × 16.00 mm — **1.20 mm** (X) / **0.70 mm** (Y) clearance per side to the spacer window |
 | `6-well_rendering.png` | Assembly rendering | — |
 
 ## 12-well plate
@@ -31,8 +31,8 @@ below the plate rim.
 
 | File | Description | Key dimensions |
 | --- | --- | --- |
-| `12-well_circular_spacer.stl` | Circular spacer that seats inside a 12-well well | Ø20.0 × 5.88 mm — **1.0 mm** radial clearance to the Ø22.05 well |
-| `12-well_tissue_stamp.stl` | Tissue stamp — holds the specimen against the coverslip (lengthened body) | 12.84 × 8.14 × **18.12 mm** — **0.2 mm** to window walls; rests on the glass floor, handle **1 mm** below the rim |
+| `12-well_circular_spacer.stl` | Circular spacer that seats inside a 12-well well | Ø20.0 × 5.88 mm — **1.0 mm** radial clearance to the Ø22.05 well; inner sample window **15.29 × 10.00 mm** |
+| `12-well_tissue_stamp.stl` | Tissue stamp — holds the specimen against the coverslip (lengthened body) | 12.84 × 8.14 × **18.12 mm** — **1.22 mm** (X) / **0.93 mm** (Y) clearance per side to the spacer window; rests on the glass floor, handle **1 mm** below the rim |
 | `12-well_cellvis_reference.stl` | Dimensional reference of the Cellvis 12-well plate (reference only — not for printing) | 127.50 × 85.35 × 19.95 mm; 12 wells Ø22.05 @ 26 mm pitch (4×3) |
 | `12-well_rendering.png` | Assembly view (spacer + stamp seated in well A1) | — |
 
@@ -50,9 +50,8 @@ below the plate rim.
 - The fine internal features of the **12-well Spacer** are ~0.6–1.2 mm — verify
   printability before fabrication, as these approach the resolution limit at
   0.1 mm layer height.
-- The 0.2 mm stamp clearance is measured to the nominal window walls; the
-  **12-well Spacer** features protrude further, so confirm stamp/spacer
-  interference for your application.
+- Stamp-to-window clearances quoted above are measured from the exported STL
+  geometry; confirm stamp/spacer fit on a test print before committing to glass.
 - Well and plate dimensions follow published Cellvis specifications; confirm
   against your specific plate lot before committing to glass.
 
