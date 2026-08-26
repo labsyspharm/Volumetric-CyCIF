@@ -46,7 +46,7 @@ Contact: [peter_sorger@hms.harvard.edu](mailto:peter_sorger@hms.harvard.edu)
 
 ### Overview
 
-This repository accompanies a cyclic light-sheet microscopy study for 3D spatial profiling of immunological structures in human specimens. It is intended to organize analysis resources, dataset access details, and links associated with the manuscript.
+This repository accompanies a cyclic light-sheet microscopy study for 3D spatial profiling of tumour, stroma, and immune structures in human specimens. It is intended to organize analysis resources, dataset access details, and links associated with the manuscript.
 
 ## ASSOCIATED PUBLICATION
 
