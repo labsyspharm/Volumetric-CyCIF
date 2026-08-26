@@ -1,4 +1,5 @@
-# Volumetric Cyclic Immunofluorescence for 3D Spatial Profiling of Immune Structures in Human FFPE Tissue
+# Volumetric Cyclic Immunofluorescence for 3D Spatial Profiling of Tumour, Stroma, and Immune Structures in Human FFPE Tissue 
+
 
 ## TABLE OF CONTENTS
 
@@ -17,7 +18,7 @@
 
 ### Title
 
-**Volumetric Cyclic Immunofluorescence for 3D Spatial Profiling of Immune Structures in Human FFPE Tissue**
+**Volumetric Cyclic Immunofluorescence for 3D Spatial Profiling of Tumour, Stroma, and Immune Structures in Human FFPE Tissue**
 
 ### Authors
 
