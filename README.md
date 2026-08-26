@@ -28,8 +28,8 @@ Alex Y. H. Wong<sup>1,2*</sup>, Yi Daniel Lu<sup>1,2*</sup>, Ziyuan Zhao<sup>1,2
 <sup>1</sup> Laboratory of Systems Pharmacology, Harvard Medical School, Boston, MA, USA  
 <sup>2</sup> Ludwig Centre at Harvard, Harvard Medical School, Boston, MA, USA  
 <sup>3</sup> Department of Systems Biology, Harvard Medical School, Boston, MA, USA
-<sup>4</sup> LifeCanvas Technologies, Cambridge, Boston, MA, USA 
-<sup>5</sup> Broad Institute of MIT and Harvard, Cambridge, MA, USA  
+<sup>4</sup> LifeCanvas Technologies, Cambridge, Boston, MA, USA
+<sup>5</sup> Broad Institute of MIT and Harvard, Cambridge, MA, USA
 <sup>6</sup> Lyda Hill Department of Bioinformatics, UT Southwestern Medical Center, Dallas, TX, USA  
 <sup>7</sup> Department of Pathology, Brigham and Women's Hospital, Boston, MA, USA  
 <sup>8</sup> Current address: Tissue Biomarker Laboratory of the Center for Immuno-Oncology, Department of Medical Oncology, Dana-Farber Cancer Institute, Boston, MA, USA  
